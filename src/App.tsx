@@ -7,6 +7,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isTransmitting, setIsTransmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dx, setDx] = useState(0);
+  const [dy, setDy] = useState(0);
+  const [dz, setDz] = useState(0);
 
   const playerId = "simon@earth";
   const targetProbe = "Voyager-1";
@@ -16,6 +19,18 @@ function App() {
     setError(null);
     try {
       await transmitCommand(playerId, targetProbe, "TAKE_PICTURE");
+    } catch (err: any) {
+      setError(`Transmission Error: ${err.message}`);
+    } finally {
+      setIsTransmitting(false);
+    }
+  };
+
+  const handleMove = async () => {
+    setIsTransmitting(true);
+    setError(null);
+    try {
+      await transmitCommand(playerId, targetProbe, `MOVE ${dx} ${dy} ${dz}`);
     } catch (err: any) {
       setError(`Transmission Error: ${err.message}`);
     } finally {
@@ -42,19 +57,47 @@ function App() {
     <div style={{ backgroundColor: '#000', color: '#0f0', minHeight: '100vh', padding: '20px', fontFamily: 'monospace' }}>
       <h1>Deep Space Network Terminal</h1>
       <div style={{ marginBottom: '20px' }}>
-        <button 
-          onClick={handleTransmit} 
+        <button
+          onClick={handleTransmit}
           disabled={isTransmitting}
           style={{ padding: '10px 20px', fontSize: '1.2em', cursor: 'pointer', backgroundColor: '#333', color: '#0f0', border: '1px solid #0f0' }}
         >
           {isTransmitting ? 'TRANSMITTING...' : 'Transmit TAKE_PICTURE'}
         </button>
-        <button 
-          onClick={handleCheckInbox} 
+        <button
+          onClick={handleCheckInbox}
           disabled={isLoading}
           style={{ marginLeft: '20px', padding: '10px 20px', fontSize: '1.2em', cursor: 'pointer', backgroundColor: '#333', color: '#0f0', border: '1px solid #0f0' }}
         >
           {isLoading ? 'CHECKING...' : 'Check Inbox'}
+        </button>
+      </div>
+
+      <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {(['X', 'Y', 'Z'] as const).map((axis, i) => {
+          const val = [dx, dy, dz][i];
+          const setter = [setDx, setDy, setDz][i];
+          return (
+            <label key={axis} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {axis}
+              <input
+                type="number"
+                min={-32768}
+                max={32767}
+                value={val}
+                onChange={e => setter(Math.max(-32768, Math.min(32767, parseInt(e.target.value) || 0)))}
+                style={{ width: '80px', padding: '6px', backgroundColor: '#111', color: '#0f0', border: '1px solid #0f0', fontFamily: 'monospace', fontSize: '1em' }}
+              />
+              <span>m</span>
+            </label>
+          );
+        })}
+        <button
+          onClick={handleMove}
+          disabled={isTransmitting}
+          style={{ padding: '10px 20px', fontSize: '1.2em', cursor: 'pointer', backgroundColor: '#333', color: '#0f0', border: '1px solid #0f0' }}
+        >
+          {isTransmitting ? 'TRANSMITTING...' : 'Transmit MOVE'}
         </button>
       </div>
 

@@ -27,7 +27,7 @@ describe('App', () => {
     const transmitBtn = screen.getByText(/Transmit TAKE_PICTURE/i);
     fireEvent.click(transmitBtn);
 
-    expect(api.transmitCommand).toHaveBeenCalledWith("Earth", "Voyager-1", "TAKE_PICTURE");
+    expect(api.transmitCommand).toHaveBeenCalledWith("simon@earth", "Voyager-1", "TAKE_PICTURE");
   });
 
   it('calls fetchInbox and displays messages when Check Inbox is clicked', async () => {
@@ -50,6 +50,6 @@ describe('App', () => {
       expect(screen.getByText(/SIGNAL RECEIVED/i)).toBeInTheDocument();
     });
 
-    expect(api.fetchInbox).toHaveBeenCalledWith("Earth");
+    expect(api.fetchInbox).toHaveBeenCalledWith("simon@earth");
   });
 });

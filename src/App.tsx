@@ -8,7 +8,7 @@ function App() {
   const [isTransmitting, setIsTransmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const playerId = "Earth";
+  const playerId = "simon@earth";
   const targetProbe = "Voyager-1";
 
   const handleTransmit = async () => {
